@@ -1,0 +1,23 @@
+.feeds-list {
+  @apply flex flex-col gap-1-lg md:gap-2-xs laptop:gap-2-md;
+
+  &-enter {
+    @apply scale-0 opacity-0;
+
+    &-active {
+      @apply opacity-100 scale-100 transition-all duration-300;
+    }
+  }
+
+  &-exit {
+    @apply scale-100 opacity-100;
+
+    &-active {
+      @apply scale-0 opacity-0 transition-all duration-300;
+    }
+  }
+}
+
+.loader {
+  @apply static mx-auto flex justify-center items-center translate-x-0 translate-y-0;
+}
