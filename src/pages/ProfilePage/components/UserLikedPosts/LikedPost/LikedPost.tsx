@@ -1,45 +1,25 @@
-import { EndpointsEnum, api, followApi } from '@/src/axios'
+import { EndpointsEnum, followApi } from '@/src/axios'
 import { Avatar, CommentsButton, LikesButton, PostComments, PostDate, PostImage, PostText, PostTitle, UIbutton, UserNickName } from '@/src/components'
 import { FC, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styles from '../Liked.module.scss'
 import { LikedPostProps } from '../UserLikedPost.type'
 import { usePostsContext } from '../../UserPosts/context'
-import { updateUser, useAppSelector } from '@/src/redux'
-import { useDispatch } from 'react-redux'
-import { useRefIntersection } from '@/src/hooks'
-import { intersectionHandlerCB } from '@/src/utils'
 
-const LikedPost: FC<LikedPostProps> = ({ post, nodeRef, pageLoaderRef, pageValue, ...props }) => {
+const LikedPost: FC<LikedPostProps> = ({ post }) => {
+
     const [commentsIsHide, setCommentsIsHide] = useState(true);
-    const [subsribedToPostAuthor, setSubsribedToPostAuthort] = useState(post.isSubscribeToAuthor)
-    const { user } = useAppSelector((state) => state.userSlice);
     const { setUserLikedPostsList } = usePostsContext()
-    const dispatch = useDispatch();
+    // const fetchUsersWhoLikedPosts = async (id: number) => {
+    //     const response = await api.get(`posts/users-who-liked-post/${id}`);
 
-    const FollowUnfollow = async () => {
-        try {
-            await followApi(post.author.id);
-            const response = await api.get(EndpointsEnum.PROFILE);
-            dispatch(updateUser(response.data));
-            setSubsribedToPostAuthort(!subsribedToPostAuthor)
-        } catch (error) {
-            console.log(error);
-        } finally {
-        }
-    };
-
-    useRefIntersection(intersectionHandlerCB(props.setPage), pageLoaderRef, {
-        threshold: 1,
-    });
+    // };
+    // useEffect(() => {
+    //     fetchUsersWhoLikedPosts(post.postId);
+    // }, [])
 
     return (
         <div key={post.postId} className={styles["user-post"]}>
-            <div
-                ref={pageLoaderRef}
-                data-value={pageLoaderRef && pageValue ? pageValue : ""}
-                className="hide-element"
-            />
             <div className="flex items-center justify-between gap-2 w-full">
                 <Link
                     className={styles["user-post__link"]}
@@ -48,13 +28,13 @@ const LikedPost: FC<LikedPostProps> = ({ post, nodeRef, pageLoaderRef, pageValue
                     <Avatar avatarUrl={post.author.avatar} />
                     <UserNickName nickName={post.author.nickName} />
                 </Link>
-                {post.author.id !== user.id && <UIbutton
-                    variant={subsribedToPostAuthor ? "outlined" : "contained"}
+                <UIbutton
+                    variant={post.isSubscribeToAuthor ? "outlined" : "contained"}
                     dataAutomation={"subscribe-button"}
-                    onClick={FollowUnfollow}
+                    onClick={() => followApi(post.author.id)}
                 >
-                    {subsribedToPostAuthor ? "unfollow" : "follow"}
-                </UIbutton>}
+                    {post.isSubscribeToAuthor ? "unfollow" : "follow"}
+                </UIbutton>
             </div>
             <div className={styles["user-post__image"]}>
                 <PostImage imgUrl={post.imgUrl} />
